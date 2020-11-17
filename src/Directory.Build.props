@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <VersionPrefix>0.1</VersionPrefix>
+    <Authors>Asti;</Authors>
+    <Summary>F# API for the CloudLayer service</Summary>
+    <Description>F# API for the CloudLayer service</Description>
+    <PackageProjectUrl>https://github.com/cloudlayerio/cloudlayerio-fsharp</PackageProjectUrl>
+    <PackageIcon>..\docs\img\nuget-logo.png</PackageIcon>
+    <PackageLicenseFile>..\LICENSE.txt</PackageLicenseFile>
+    <PackageTags>F#;FSharp;CloudLayer;</PackageTags>
+    <FsDocsLicenseLink>https://github.com/cloudlayerio/cloudlayerio-fsharp/blob/master/LICENSE.txt</FsDocsLicenseLink>
+    <RepositoryUrl>https://github.com/cloudlayerio/cloudlayerio-fsharp</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+ 
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <None Include="..\docs\img\logo.png" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE.txt" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <!-- Read Release Notes from RELEASE_NOTES.md (cref https://dev.to/j_sakamoto/writing-a-nuget-package-release-notes-in-an-outside-of-a-csproj-file-3f94) -->
+  <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+    <ReadLinesFromFile File="..\..\RELEASE_NOTES.md">
+      <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
+</Project>

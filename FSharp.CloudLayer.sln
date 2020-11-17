@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.64
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CloudLayer.FSharp", "src\CloudLayer.FSharp.fsproj", "{844FAAFB-02C6-4F5D-B79D-7DBB3AD8E345}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CloudLayer.Tests", "tests\CloudLayer.Tests.fsproj", "{20CEE79F-4E8D-462B-94A5-1BC634FE8614}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{844FAAFB-02C6-4F5D-B79D-7DBB3AD8E345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{844FAAFB-02C6-4F5D-B79D-7DBB3AD8E345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{844FAAFB-02C6-4F5D-B79D-7DBB3AD8E345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{844FAAFB-02C6-4F5D-B79D-7DBB3AD8E345}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20CEE79F-4E8D-462B-94A5-1BC634FE8614}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20CEE79F-4E8D-462B-94A5-1BC634FE8614}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20CEE79F-4E8D-462B-94A5-1BC634FE8614}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20CEE79F-4E8D-462B-94A5-1BC634FE8614}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1F107AB-73B6-4ECA-B2EB-F7E48040FAD3}
+	EndGlobalSection
+EndGlobal
