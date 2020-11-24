@@ -1,0 +1,5 @@
+FSharp.Core
+System.Net.Http
+System.Text.Json
+System.Net.Http.Json
+Microsoft.Extensions.Http
