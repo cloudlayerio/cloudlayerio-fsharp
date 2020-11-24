@@ -4,13 +4,14 @@ redirects: on
 storage: none
 
 nuget FSharp.Core
+nuget System.Net.Http
+nuget System.Net.Http.Json
+nuget Microsoft.Extensions.Http
 nuget Microsoft.NET.Test.Sdk
 nuget NUnit
 nuget NUnit.Runners
 nuget NUnit3TestAdapter
 nuget FsCheck
-nuget System.Net.Http
-nuget Microsoft.Extensions.Http
 
 // [ FAKE GROUP ]
 group Build
