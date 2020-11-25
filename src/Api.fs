@@ -5,17 +5,27 @@ open System.IO
 open CloudLayerIo.Async
 open CloudLayerIo.Http
     
+
+type DomSelector =
+    { Selector: string
+      Options: {| Visible: bool
+                  Hidden: bool
+                  Timeout: TimeSpan |} option 
+    }
+
 type ImageOptions =
     { Delay: TimeSpan
       Timeout: TimeSpan
-      Filename: string
+      Filename: string option
       Inline: bool 
+      WaitForSelector: DomSelector option
       Source: Source }
     static member Defaults = 
         { Delay = TimeSpan.Zero
           Timeout = TimeSpan.FromSeconds 30.
           Inline = false
-          Filename = "image.jpeg"
+          WaitForSelector = None
+          Filename = None
           Source = Html "<h1>Hello World</h1>" }
 
 type PdfOptions =
@@ -27,8 +37,9 @@ type PdfOptions =
        PrintBackground: bool
        Timeout: TimeSpan
        Delay: TimeSpan
-       Filename: string
+       Filename: string option
        Inline: bool
+       WaitForSelector: DomSelector option
        Source: Source
        }
      static member Defaults =
@@ -37,8 +48,9 @@ type PdfOptions =
            PrintBackground = true
            Delay = TimeSpan.Zero
            Timeout = TimeSpan.FromSeconds 30.
-           Filename = "file.pdf"
+           Filename = None
            Inline = false
+           WaitForSelector = None
            Source = Html "<h1>Hello World</h1>" }
 
 [<RequireQualifiedAccess>]
@@ -59,7 +71,6 @@ module CloudLayerApi =
             | Html _ -> "/v1/html/image"
         
         connection |> fetch uri (Some options) |> bind tryReadStream
-
     
     let fetchImage source connection =
         connection |> fetchImageWith { ImageOptions.Defaults with Source = source }

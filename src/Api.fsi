@@ -2,11 +2,19 @@ namespace CloudLayerIo
 
 open System
 
+type DomSelector =
+    { Selector: string
+      Options: {| Visible: bool
+                  Hidden: bool
+                  Timeout: TimeSpan |} option 
+    }
+
 type ImageOptions =
     { Delay: TimeSpan
       Timeout: TimeSpan
-      Filename: string
+      Filename: string option
       Inline: bool
+      WaitForSelector: DomSelector option
       Source: Source }
 
 type PdfOptions =
@@ -18,8 +26,9 @@ type PdfOptions =
       PrintBackground: bool
       Timeout: TimeSpan
       Delay: TimeSpan
-      Filename: string
+      Filename: string option
       Inline: bool
+      WaitForSelector: DomSelector option
       Source: Source }
 
 [<RequireQualifiedAccess>]
@@ -42,7 +51,7 @@ module CloudLayerApi =
     /// Creates a pdf with the specified options and returns a stream containing the pdf file
     val fetchPdfWith:
         options:PdfOptions -> connection:Connection -> Async<Result<(System.IO.Stream * ApiStatus), FailureReason>>
-    
+
     /// Creates a pdf with the default options and returns a stream containing the pdf file
     val fetchPdf: source:Source -> connection:Connection -> Async<Result<(System.IO.Stream * ApiStatus), FailureReason>>
 
@@ -50,4 +59,4 @@ module CloudLayerApi =
     val saveToFile: path:string -> result:Async<Result<(System.IO.Stream * 'a), 'b>> -> Async<Result<'a, 'b>>
 
     /// Reads the entire response into a byte-array
-    val toByteArray: result:Async<Result<(System.IO.Stream * 'a), 'b>> -> Async<Result<byte [], 'b>>    
+    val toByteArray: result:Async<Result<(System.IO.Stream * 'a), 'b>> -> Async<Result<byte [], 'b>>
