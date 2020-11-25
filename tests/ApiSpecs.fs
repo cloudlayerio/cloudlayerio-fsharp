@@ -42,7 +42,19 @@ let referenceHtml = Html "<h1>Hello World!</h1>"
 
 let fileContents fileName = 
     File.ReadAllBytes(fileName) |> Ok
-    
+   
+let isSame actual reference =
+    match actual, reference with
+    | Ok a, Ok b -> 
+        let headerLength = 10
+        let headerMatches = 
+            (a |> Array.take headerLength) = (b |> Array.take headerLength)
+        let (la,lb) = Array.length a, Array.length b
+        let similarSize = (abs la - lb) <= (lb / 100)
+        
+        headerMatches && similarSize
+    | _ -> false
+
 [<Test>]
 let ``Captures an image from a url`` () =   
     let res = 
@@ -52,9 +64,8 @@ let ``Captures an image from a url`` () =
         |> Async.RunSynchronously
 
     let imgRef = fileContents "url-reference.jpg"
-    let isSame = res = imgRef
 
-    Assert.That(isSame)
+    Assert.That(isSame res imgRef)
 
 [<Test>]
 let ``Captures an image from html`` () =   
@@ -65,9 +76,8 @@ let ``Captures an image from html`` () =
         |> Async.RunSynchronously
 
     let imgRef = fileContents "html-reference.jpg"
-    let isSame = res = imgRef
-
-    Assert.That(isSame)
+    
+    Assert.That(isSame res imgRef)
 
 [<Test>]
 let ``Captures a pdf from a url`` () =   
@@ -77,10 +87,9 @@ let ``Captures a pdf from a url`` () =
         |> CloudLayerApi.toByteArray
         |> Async.RunSynchronously
 
-    let imgRef = fileContents "url-reference.pdf"
-    let isSame = res = imgRef
-
-    Assert.That(isSame)
+    let pdfRef = fileContents "url-reference.pdf"
+    
+    Assert.That(isSame res pdfRef)
 
 [<Test>]
 let ``Captures a pdf from html`` () =   
@@ -90,7 +99,6 @@ let ``Captures a pdf from html`` () =
         |> CloudLayerApi.toByteArray
         |> Async.RunSynchronously
 
-    let imgRef = fileContents "html-reference.pdf"
-    let isSame = res = imgRef
+    let pdfRef = fileContents "html-reference.pdf"
 
-    Assert.That(isSame)
+    Assert.That(isSame res pdfRef)
