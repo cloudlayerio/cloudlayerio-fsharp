@@ -6,6 +6,7 @@ open System.Net.Http
 open System.Net.Http.Json
 open System.Text
 open System.Text.Json
+open System.Text.Json.Serialization
 
 type ApiStatus =
     { Limit: int
@@ -148,20 +149,33 @@ module internal Http =
                 |> map (fun stream -> stream, status)
         )
 
+    let notSupported () = raise (NotSupportedException())
+
+    type OptionValueConverter<'T>() =
+        inherit JsonConverter<'T option>()    
+    
+        override _.Write (writer, value: 'T option, options: JsonSerializerOptions) =
+            match value with
+            | Some value -> JsonSerializer.Serialize(writer, value, options)
+            | None -> writer.WriteNullValue ()
+        
+        override _.Read (_r, _t, _o) =
+            notSupported ()
+
     let serializerOptions = 
         let opts = JsonSerializerOptions(PropertyNamingPolicy = JsonNamingPolicy.CamelCase)        
 
         opts.Converters.Add <| {
             new Serialization.JsonConverter<TimeSpan>() with 
-                override _.Write(writer, timespan, options) =
+                override _.Write(writer, timespan, _options) =
                     writer.WriteNumberValue(int timespan.TotalMilliseconds)                        
-                override _.Read(r, t, opts) =
-                    failwith "Not Required"
+                override _.Read(_r, _t, _opts) =
+                    notSupported ()
         }
 
         opts.Converters.Add <| {
             new Serialization.JsonConverter<Source>() with 
-                override _.Write(writer, source, options) =
+                override _.Write(writer, source, _options) =
                     match source with
                     | Url url ->                        
                         writer.WriteStringValue("url")
@@ -171,9 +185,20 @@ module internal Http =
                         writer.WriteString("html", html |> Encoding.UTF8.GetBytes |> Convert.ToBase64String)
 
                 override _.Read(r, t, opts) =
-                    failwith "Not Required"
+                    notSupported ()
         }
+
+        opts.Converters.Add <| { new Serialization.JsonConverterFactory() with
+                override _.CanConvert(t: Type) : bool =
+                    t.IsGenericType &&
+                    t.GetGenericTypeDefinition() = typedefof<Option<_>>
         
+                override _.CreateConverter(t: Type, _options) : JsonConverter =
+                    let typ = t.GetGenericArguments() |> Array.head
+                    let converterType = typedefof<OptionValueConverter<_>>.MakeGenericType(typ)
+                    Activator.CreateInstance(converterType) :?> JsonConverter        
+        }
+
         opts
 
     let fetch (path: string) (content: 'content option) (connection: Connection) = async {
@@ -185,8 +210,17 @@ module internal Http =
         
         return! 
             match content with
-            | Some obj -> client.PostAsJsonAsync(path, obj, serializerOptions, token) 
-            | None -> client.GetAsync(path, token)
+            | Some obj -> 
+            #if DEBUG
+                let json = JsonSerializer.Serialize(obj, serializerOptions)
+                do System.Diagnostics.Debug.Print $"POST:{path}\n{json}"
+            #endif
+                client.PostAsJsonAsync(path, obj, serializerOptions, token) 
+            | None -> 
+            #if DEBUG
+                do System.Diagnostics.Debug.Print $"GET:{path}"
+            #endif
+                client.GetAsync(path, token)
             |> Async.AwaitTask
     }
 
