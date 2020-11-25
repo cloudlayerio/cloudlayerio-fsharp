@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Http.fs" />
+    <Compile Include="Api.fsi" />
     <Compile Include="Api.fs" />
     <None Include="paket.references" />
   </ItemGroup>

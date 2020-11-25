@@ -4,8 +4,8 @@ open System
 open System.Net
 open System.Net.Http
 open System.Net.Http.Json
-open System.Text.Json
 open System.Text
+open System.Text.Json
 
 type ApiStatus =
     { Limit: int

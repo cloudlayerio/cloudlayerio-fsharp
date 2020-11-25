@@ -44,16 +44,14 @@ type PdfOptions =
 [<RequireQualifiedAccess>]
 module CloudLayerApi =   
     
-    /// Check if the service is online.
-    /// Returns true if online.
+
     let isOnline connection =                 
         connection |> fetch "/oapi" None |> map (fun res -> res.IsSuccessStatusCode)    
  
-    /// Returns the account operational status and limits
-    let accountStatus connection = 
-        connection |> fetch "/v1/getStatus" None |> bind tryParseResponse
     
-    /// Creates an image with the specified options and returns a stream containing the image
+    let accountStatus connection = 
+        connection |> fetch "/v1/getStatus" None |> bind tryParseResponse    
+    
     let fetchImageWith (options : ImageOptions) connection =
         let uri = 
             match options.Source with
@@ -62,11 +60,10 @@ module CloudLayerApi =
         
         connection |> fetch uri (Some options) |> bind tryReadStream
 
-    /// Creates an image with the default options and returns a stream containing the image
-    let fetchImage (source : Source) connection =
+    
+    let fetchImage source connection =
         connection |> fetchImageWith { ImageOptions.Defaults with Source = source }
-
-    /// Creates a pdf with the specified options and returns a stream containing the pdf file
+    
     let fetchPdfWith (options : PdfOptions) connection =
         let uri = 
            match options.Source with
@@ -75,11 +72,10 @@ module CloudLayerApi =
 
         connection |> fetch uri (Some options) |> bind tryReadStream
 
-    /// Creates a pdf with the default options and returns a stream containing the pdf file
-    let fetchPdf (source : Source) connection =
+    
+    let fetchPdf source connection =
         connection |> fetchPdfWith { PdfOptions.Defaults with Source = source }
 
-    /// If generation was successful, saves a generated file to the specified path
     let saveToFile (path: string) result =
         result
         |> Result.mapAsync(fun (stream : Stream, resp) -> 
@@ -90,7 +86,6 @@ module CloudLayerApi =
                 return resp
         })
             
-    /// Reads the entire response into a byte-array
     let toByteArray result =
         result
         |> Result.mapAsync(fun (stream : Stream, _) -> 
