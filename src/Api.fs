@@ -58,11 +58,11 @@ module CloudLayerApi =
     
 
     let isOnline connection =                 
-        connection |> fetch "/oapi" None |> map (fun res -> res.IsSuccessStatusCode)    
+        connection |> fetch Head "/oapi" |> map (fun res -> res.IsSuccessStatusCode)    
  
     
     let accountStatus connection = 
-        connection |> fetch "/v1/getStatus" None |> bind tryParseResponse    
+        connection |> fetch Get "/v1/getStatus" |> bind tryParseResponse    
     
     let fetchImageWith (options : ImageOptions) connection =
         let uri = 
@@ -70,7 +70,7 @@ module CloudLayerApi =
             | Url _ -> "/v1/url/image"
             | Html _ -> "/v1/html/image"
         
-        connection |> fetch uri (Some options) |> bind tryReadStream
+        connection |> fetch (Post options) uri |> bind tryReadStream
     
     let fetchImage source connection =
         connection |> fetchImageWith { ImageOptions.Defaults with Source = source }
@@ -81,7 +81,7 @@ module CloudLayerApi =
            | Url _ -> "/v1/url/pdf"
            | Html _ -> "/v1/html/pdf"
 
-        connection |> fetch uri (Some options) |> bind tryReadStream
+        connection |> fetch (Post options) uri |> bind tryReadStream
 
     
     let fetchPdf source connection =

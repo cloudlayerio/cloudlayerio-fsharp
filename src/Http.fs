@@ -83,6 +83,12 @@ module internal Http =
     
     open Service
     open Async
+
+    type 'a Verb =
+    | Head
+    | Get
+    | Post of data: 'a
+    
     
     let parseRateLimit (response: HttpResponseMessage) =        
         let getValue key = 
@@ -201,7 +207,7 @@ module internal Http =
 
         opts
 
-    let fetch (path: string) (content: 'content option) (connection: Connection) = async {
+    let fetch (content: 'content Verb) (path: string) (connection: Connection) = async {
         let! token = Async.CancellationToken
         let client = connection.ClientFactory.CreateClient(ClientName)
         client.BaseAddress <- Service.BaseUri
@@ -210,17 +216,19 @@ module internal Http =
         
         return! 
             match content with
-            | Some obj -> 
+            | Post obj -> 
             #if DEBUG
                 let json = JsonSerializer.Serialize(obj, serializerOptions)
                 do System.Diagnostics.Debug.Print $"POST:{path}\n{json}"
             #endif
                 client.PostAsJsonAsync(path, obj, serializerOptions, token) 
-            | None -> 
+            | Get -> 
             #if DEBUG
                 do System.Diagnostics.Debug.Print $"GET:{path}"
             #endif
                 client.GetAsync(path, token)
+            | Head ->
+                client.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, token)
             |> Async.AwaitTask
     }
 
