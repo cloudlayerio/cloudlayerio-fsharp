@@ -13,6 +13,10 @@ let isOk = function | Ok _ -> true | Error _ -> false
 let run async' = Async.RunSynchronously(async', 5000000)
 
 [<Test>]
+let ``API key exists`` () =    
+    Assert.That(not (String.IsNullOrWhiteSpace conn.ApiKey))
+
+[<Test>]
 let ``Service is online`` () =    
     Assert.That(conn |> CloudLayerApi.isOnline |> run)
 
@@ -47,9 +51,13 @@ let isSame actual reference =
     match actual, reference with
     | Ok a, Ok b -> 
         let headerLength = 10
+        
+        // same header
         let headerMatches = 
             (a |> Array.take headerLength) = (b |> Array.take headerLength)
         let (la,lb) = Array.length a, Array.length b
+        
+        // file sizes match to within 1%
         let similarSize = (abs la - lb) <= (lb / 100)
         
         headerMatches && similarSize
