@@ -36,13 +36,13 @@ let connection' = { connection with ClientFactory = factory }
 
 `IHttpClientFactory` avoids socket exhaustion problems and maintains a pool of `HttpClient` instances for reuse. See [this article](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) for more.
 
-All API calls have as the last argument the `Connection`, and they take the form
+API calls have, as the last argument a `Connection`, and they take the shape:
 
 ```fsharp
 connection |> CloudLayerApi.apiCall : Async<Result<ReturnValue, FailureReason>>
 ```
 
-All API calls use the `Result` type, and they follow the [railway-oriented approach](https://fsharpforfunandprofit.com/posts/recipe-part2/). 
+All API calls return the `Result` type, and they follow the [railway-oriented approach](https://fsharpforfunandprofit.com/posts/recipe-part2/). 
 
 ## Account Status
 
@@ -53,7 +53,7 @@ let status =
     connection |> CloudLayerApi.accountStatus |> Async.RunSynchronously
 ```
 
-You can check the results by pattern matching.
+The results can be pattern matched.
 
 ```fsharp
 match status with
@@ -92,7 +92,6 @@ and returns either a `System.IO.Stream` or a `FailureReason`.
 match image with
 | Ok (stream, status) ->
     //do something with stream
-    ()
 | Error err -> 
     failwithf "Something went wrong: %A" err
 ```
@@ -108,7 +107,7 @@ connection
 
 ![HtmlImage](https://raw.githubusercontent.com/cloudlayerio/cloudlayerio-fsharp/main/tests/google.jpg)
 
-To use more configuration options, use `fetchImageWith`.
+To use more configuration options, use `fetchImageWith`. Options are specified by the `ImageOptions` record.
 
 ```fsharp
 
@@ -124,14 +123,14 @@ connection
 
 ## Creating PDFs
 
-Creating PDFs is very similar to creating images.
+Creating PDFs is similar to the API for creating images.
 
 ```fsharp
 connection |> CloudLayerApi.fetchPdf (Url "https://en.wikipedia.org/wiki/Marine_snow")
 connection |> CloudLayerApi.fetchPdf (Html "<h1>Hello from PDF!</h1>")
 ```
 
-For more options, use `fetchPdfWith`:
+For more options, use `fetchPdfWith`. Options are specified by the `PdfOptions` record.
 
 ```fsharp
 connection 
@@ -149,4 +148,4 @@ connection
 
 ### Note
 
-This library  is specifically for F#, if you are using C# you should use our C# library. We did this because we wanted to give F# developers first class support instead of wrapping a C# library.
+This library is specifically for F#, if you are using C# you should [use our C# library](github.com/cloudlayerio/cloudlayerio-csharp). We did this because we wanted to give F# developers first class support instead of wrapping a C# library.
