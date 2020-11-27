@@ -110,3 +110,19 @@ let ``Captures a pdf from html`` () =
     let pdfRef = fileContents "html-reference.pdf"
 
     Assert.That(isSame res pdfRef)
+
+[<Test>]
+let ``Saves a file to disk`` () =  
+    let filename = "eagle-island.jpg"
+    let result =
+        conn
+        |> CloudLayerApi.fetchImageWith 
+            { ImageOptions.Defaults with 
+                Source = Url "https://www.openstreetmap.org#map=13/-6.1918/71.2976" 
+                Timeout = TimeSpan.FromSeconds 60. 
+                Inline = false }
+        |> CloudLayerApi.saveToFile filename
+        |> Async.RunSynchronously
+    
+    Assert.That(isOk result)
+    Assert.That(File.Exists filename)
