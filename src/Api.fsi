@@ -16,6 +16,7 @@ type ImageOptions =
       Inline: bool
       WaitForSelector: DomSelector option
       Source: Source }
+      static member Defaults: ImageOptions
 
 type PdfOptions =
     { Format: string
@@ -30,6 +31,7 @@ type PdfOptions =
       Inline: bool
       WaitForSelector: DomSelector option
       Source: Source }
+      static member Defaults: PdfOptions
 
 [<RequireQualifiedAccess>]
 module CloudLayerApi =
